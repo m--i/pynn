@@ -59,7 +59,7 @@ if __name__ == '__main__':
         outputs = model.extract(inputs, input_sizes)
         outputs = F.softmax(outputs, -1)
         
-        print outputs.size()
+        print(outputs.size())
         hypos = Decoder.decode_prob(outputs)
         for i in range(len(hypos)):
             hypo = hypos[i]
