@@ -9,6 +9,7 @@ import argparse
 import multiprocessing
 import numpy as np
 from scipy.io import wavfile
+import librosa
 
 from pynn.util import audio
 from pynn.io import kaldi_io
@@ -25,7 +26,16 @@ def write_ark_thread(segs, out_ark, out_scp, args):
             seg_name = '%s-%06.f-%06.f' % (wav, float(start)*100, float(end)*100)
         else:
             if len(tokens) == 1: tokens.append(tokens[0])
-            if len(tokens) == 2: tokens.extend(['0.0', '0.0'])
+            wave_path = tokens[0]
+            if len(tokens) == 2:
+                if args.wav_path is not None:
+                    wav_path = args.wav_path + '/' + wave_path
+                if not os.path.isfile(wav_path):
+                    print('File %s does not exist' % wav_path)
+                    continue
+                y, sr = librosa.load(wav_path, sr=None)
+                duration = '{:.5f}'.format(librosa.get_duration(y, sr))
+                tokens.extend(['0.0', duration])
             seg_name, wav, start, end = tokens[:4]
         start, end = float(start), float(end)
         
@@ -46,6 +56,7 @@ def write_ark_thread(segs, out_ark, out_scp, args):
         end = -1 if end <= 0. else int(end * sample_rate)
         if start >= len(signal) or start >= end:
              print('Wrong segment %s' % seg_name)
+             print(len(signal), start)
              continue
         feats = audio.extract_fbank(signal[start:end], fbank_mat, sample_rate=sample_rate, nfft=args.nfft)
         if len(feats) > args.max_len or len(feats) < args.min_len:
