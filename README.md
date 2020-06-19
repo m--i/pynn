@@ -17,7 +17,7 @@ The reqired argument is the `--seg-desc` which contains the path to a segment de
 | ---- | ---------- | -------- |
 | utt_0000051685-usr_0006 | 1.56 | 8.29|
 
-If the audio files are not in wav format you can convert them using the [audio_to_wav.sh](scripts/src/scripts/audio_to_wav.sh) script
+If the audio files are not in wav format you can convert them using the [audio_to_wav.sh](src/scripts/audio_to_wav.sh) script.
 
 Finally combine all extracted scp file with:
 
