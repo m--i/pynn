@@ -16,7 +16,7 @@ def write_ark_thread(audio_files, args):
         if not isfile(audio_file_path + '.wav'):
             call('sox "{}" -r 16000 -c 1 -b 16 -e signed "{}.wav" -q'.format(audio_file_path, audio_file_path), shell=True)
 
-parser = argparse.ArgumentParser(description='pynn')
+parser = argparse.ArgumentParser(description='Conver an audio file to wav in parallel.')
 parser.add_argument('--audio-path', help='path to audio files', type=str, default=None)
 parser.add_argument('--src-ext', help='extension of src audio files', type=str, default='mp3')
 parser.add_argument('--jobs', help='number of parallel jobs', type=int, default=1)
