@@ -13,16 +13,17 @@ from subprocess import call
 def write_ark_thread(audio_files, args):
     for audio_file in audio_files:
         audio_file_path = join(args.audio_path, audio_file)
-        print('Processing {}…'.format(audio_file))
-        call('sox "{}" -r 16000 -c 1 -b 16 -e signed "{}.wav" -q'.format(audio_file_path, audio_file_path), shell=True)
+        if not isfile(audio_file_path + '.wav'):
+            call('sox "{}" -r 16000 -c 1 -b 16 -e signed "{}.wav" -q'.format(audio_file_path, audio_file_path), shell=True)
 
 parser = argparse.ArgumentParser(description='pynn')
 parser.add_argument('--audio-path', help='path to audio files', type=str, default=None)
+parser.add_argument('--src-ext', help='extension of src audio files', type=str, default='mp3')
 parser.add_argument('--jobs', help='number of parallel jobs', type=int, default=1)
 
 if __name__ == '__main__':
     args = parser.parse_args()
-    audio_files = [f for f in listdir(args.audio_path) if isfile(join(args.audio_path, f)) and f.endswith('.flac')]
+    audio_files = [f for f in listdir(args.audio_path) if isfile(join(args.audio_path, f)) and f.endswith('.{}'.format(args.src_ext))]
     size = len(audio_files) // args.jobs
     jobs = []
     j = 0
