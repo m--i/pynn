@@ -31,6 +31,7 @@ if __name__ == '__main__':
         sp = spm.SentencePieceProcessor(model_file=args.model)
         with open(args.label, 'r') as label_file:
             with open(args.out, 'w') as bpe_file:
-                for label in label_file:
-                    bpe_file.write(' '.join([str(i) for i in sp.encode(label)]) + '\n')
+                for line in label_file:
+                    utt, sent = line.split(maxsplit=1)
+                    bpe_file.write(utt + '\t' + ' '.join([str(i) for i in sp.encode(sent)]) + '\n')
 
