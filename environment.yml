@@ -1,12 +1,11 @@
 name: pynn
 channels:
   - pytorch
-  - conda-forge
-  - defaults
+  - anaconda
 dependencies:
-  - numpy=1.18.5
-  - matplotlib=3.2.1
-  - scipy=1.4.1
-  - pytorch=1.4.0
-  - torchvision=0.5.0
-  - nvidia-apex=0.1
+  - numpy
+  - matplotlib
+  - scipy
+  - pytorch
+  - torchvision
+  - cudatoolkit=10.1

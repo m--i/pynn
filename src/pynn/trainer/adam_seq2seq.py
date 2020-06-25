@@ -127,7 +127,8 @@ def eval_epoch(model, data, device, batch_input):
     return loss_per_word, accuracy
     
 def train_model(model, datasets, epochs, device, cfg,
-                loss_norm=False, grad_norm=True, fp16=False):
+                loss_norm=False, grad_norm=True, fp16=False,
+                tensorboard_writer = None):
     ''' Start training '''
 
     model_path = cfg['model_path']
@@ -156,18 +157,25 @@ def train_model(model, datasets, epochs, device, cfg,
         start = time.time()
         tr_loss, tr_accu = train_epoch(model, tr_data, opt, eps, device, b_input, b_update, n_print,
                                        teacher_force=teacher_force, loss_norm=loss_norm, grad_norm=grad_norm)
-            
+        
+        tr_ppl = math.exp(min(tr_loss, 100))
         print('  (Training)   ppl: {ppl: 8.5f}, accuracy: {accu:3.3f} %, '\
               'elapse: {elapse:3.3f} min'.format(
-                  ppl=math.exp(min(tr_loss, 100)), accu=100*tr_accu,
+                  ppl=tr_ppl, accu=100*tr_accu,
                   elapse=(time.time()-start)/60))
 
         start = time.time()
         cv_loss, cv_accu = eval_epoch(model, cv_dat, device, b_input)
+        vl_ppl = math.exp(min(cv_loss, 100))
         print('  (Validation) ppl: {ppl: 8.5f}, accuracy: {accu:3.3f} %, '\
                 'elapse: {elapse:3.3f} min'.format(
-                    ppl=math.exp(min(cv_loss, 100)), accu=100*cv_accu,
+                    ppl=vl_ppl, accu=100*cv_accu,
                     elapse=(time.time()-start)/60))
+
+        if not tensorboard_writer is None:
+            tensorboard_writer.add_scalar('ppl', {'training': tr_ppl, 'validation': vl_ppl}, epoch_i)
+            tensorboard_writer.add_scalar('accuracy', {'training': 100*tr_accu, 'validation': 100*cv_accu}, epoch_i)
+            tensorboard_writer.flush()
 
         if math.isnan(cv_loss): break
         model_file = model_path + '/epoch-{}.pt'.format(epoch_i)

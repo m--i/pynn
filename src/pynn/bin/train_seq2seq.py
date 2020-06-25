@@ -66,6 +66,7 @@ parser.add_argument('--lr', help='learning rate', type=float, default=2.0)
 parser.add_argument('--loss-norm', help='per-token loss normalization', action='store_true')
 parser.add_argument('--grad-norm', help='per-token grad normalization', action='store_true')
 parser.add_argument('--fp16', help='fp16 or not', action='store_true')
+parser.add_argument('--tensorboard', help='enable tensorboard logging', action='store_true')
 
 if __name__ == '__main__':
     args = parser.parse_args()
@@ -103,11 +104,20 @@ if __name__ == '__main__':
                                   sort_src=True, max_len=args.max_len, max_utt=args.max_utt,
                                   mean_sub=args.mean_sub, zero_pad=args.zero_pad, fp16=args.fp16)
 
+    tensorboard_writer = None
+    if args.tensorboard:
+        from torch.utils.tensorboard import SummaryWriter
+        summary_name = 'runs/s2s-e{}d{}h{}'.format(args.n_enc, args.n_dec, args.n_head)
+        if args.use_cnn:
+            summary_name += 'cnn'
+        tensorboard_writer = SummaryWriter(summary_name)
+
     cfg = {'model_path': args.model_path, 'lr': args.lr, 'label_smooth': args.label_smooth,
            'weight_decay': args.weight_decay, 'teacher_force': args.teacher_force,
            'n_warmup': args.n_warmup, 'n_const': args.n_const,
            'b_input': args.b_input, 'b_update': args.b_update, 'n_print': args.n_print}
     datasets = (tr_reader, cv_reader)
     train_model(model, datasets, args.n_epoch, device, cfg,
-                loss_norm=args.loss_norm, grad_norm=args.grad_norm, fp16=args.fp16)
+                loss_norm=args.loss_norm, grad_norm=args.grad_norm, fp16=args.fp16,
+                tensorboard_writer=tensorboard_writer)
 
