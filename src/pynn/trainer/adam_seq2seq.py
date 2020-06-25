@@ -173,8 +173,8 @@ def train_model(model, datasets, epochs, device, cfg,
                     elapse=(time.time()-start)/60))
 
         if not tensorboard_writer is None:
-            tensorboard_writer.add_scalar('ppl', {'training': tr_ppl, 'validation': vl_ppl}, epoch_i)
-            tensorboard_writer.add_scalar('accuracy', {'training': 100*tr_accu, 'validation': 100*cv_accu}, epoch_i)
+            tensorboard_writer.add_scalars('ppl', {'training': tr_ppl, 'validation': vl_ppl}, epoch_i)
+            tensorboard_writer.add_scalars('accuracy', {'training': 100*tr_accu, 'validation': 100*cv_accu}, epoch_i)
             tensorboard_writer.flush()
 
         if math.isnan(cv_loss): break
