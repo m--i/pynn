@@ -55,7 +55,11 @@ if __name__ == '__main__':
     use_gpu = torch.cuda.is_available()
     device = torch.device('cuda' if use_gpu else 'cpu')
 
-    mdic = torch.load(args.model_dic)
+    if use_gpu:
+        mdic = torch.load(args.model_dic)
+    else:
+        mdic = torch.load(args.model_dic, map_location=torch.device('cpu'))
+
     model = Seq2Seq(**mdic['params']).to(device)
     model.load_state_dict(mdic['state'])
     model.eval()
@@ -104,7 +108,10 @@ if __name__ == '__main__':
                 fout.write("# End=%d\n" % (e//4))
                 for j, token in enumerate(hypo):
                     js, je = sp[j], ep[j]
-                    fout.write("%s: %d %d  %f\n" % (dic[token-2], js, je, math.exp(score[j])))
+                    if dic is not None:
+                        fout.write("%s: %d %d  %f\n" % (dic[token-2], js, je, math.exp(score[j])))
+                    else:
+                        fout.write("%s: %d %d  %f\n" % ('?', js, je, math.exp(score[j])))
                 fout.write("\n")
                 
                 attn = attn.view(-1, attn.size(2))
