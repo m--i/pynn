@@ -39,7 +39,7 @@ if __name__ == '__main__':
                 if args.export_segs:
                     segs[utt] = '{}\t{}\t{}'.format(utt, start, dur)
                 if args.export_lbls:
-                    lbls[utt] = '{}\t{}'.format(utt, sent.replace('\n', ''))
+                    lbls[utt] = '{} {}'.format(utt, sent.replace('\n', '').replace(' ','').strip())
         train_val_subset, test_subset, _, _ = train_test_split(utts, range(len(utts)), test_size=args.test_size)
         val_size = args.validation_size / (1.0 - args.test_size)
         train_subset, val_subset, _, _ = train_test_split(train_val_subset, range(len(train_val_subset)), test_size=val_size)
@@ -49,7 +49,7 @@ if __name__ == '__main__':
             for scp_line in scp_file:
                 utt, ptr = scp_line.split(maxsplit=1)
                 utt = utt.replace('.flac.wav', '')
-                scps[utt] = '{}\t{}'.format(utt, ptr.replace('\n', ''))
+                scps[utt] = '{} {}'.format(utt, ptr.replace('\n', ''))
 
     for utts, suffix in zip([train_subset, val_subset, test_subset], [args.train, args.validation, args.test]):
         with open('{}-{}.stm'.format(scr_filename, suffix), 'w') as stm_file:
