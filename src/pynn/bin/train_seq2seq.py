@@ -67,6 +67,7 @@ parser.add_argument('--loss-norm', help='per-token loss normalization', action='
 parser.add_argument('--grad-norm', help='per-token grad normalization', action='store_true')
 parser.add_argument('--fp16', help='fp16 or not', action='store_true')
 parser.add_argument('--tensorboard', help='enable tensorboard logging', action='store_true')
+parser.add_argument('--tensorboard-dir', help='tensorboard directory', type=str, default='runs/')
 
 if __name__ == '__main__':
     args = parser.parse_args()
@@ -107,7 +108,7 @@ if __name__ == '__main__':
     tensorboard_writer = None
     if args.tensorboard:
         from torch.utils.tensorboard import SummaryWriter
-        summary_name = 'runs/s2s-e{}d{}h{}'.format(args.n_enc, args.n_dec, args.n_head)
+        summary_name = '{}s2s-e{}d{}h{}'.format(args.tensorboard_dir, args.n_enc, args.n_dec, args.n_head)
         if args.use_cnn:
             summary_name += 'cnn'
         tensorboard_writer = SummaryWriter(summary_name)

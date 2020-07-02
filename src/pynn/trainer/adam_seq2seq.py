@@ -150,6 +150,10 @@ def train_model(model, datasets, epochs, device, cfg,
     pool = EpochPool(5)
     epoch_i, _ = load_last_chkpt(model_path, model, opt)
 
+    # Reshape network
+    # model.decoder.project = nn.Linear(512, 7, bias=True)
+    # model = opt.initialize(model, weight_decay=weight_decay, fp16=fp16)
+
     while epoch_i < epochs:
         epoch_i += 1
         print('[ Epoch', epoch_i, ']')
